@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Zhanthark Esthar Rani S — Ask my portfolio</title>
+<meta name="description" content="Senior Business Systems Engineer (AI & Automation). Chat with my portfolio, or query it in SQL.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef2f4; --surface:#ffffff; --ink:#16212b; --muted:#566673; --line:#cdd8de; --accent:#2a6f97;
+  --bot-bg:#e9eff3; --user-bg:#2a6f97; --user-ink:#ffffff; --live:#2f9e6b; --mono-ink:#1d3a4d;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0e161d; --surface:#15212b; --ink:#e4edf2; --muted:#93a6b3; --line:#27384a; --accent:#7fb8d9; --bot-bg:#1f3140; --user-bg:#2a6f97; --mono-ink:#bfe0f1; color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#0e161d; --surface:#15212b; --ink:#e4edf2; --muted:#93a6b3; --line:#27384a; --accent:#7fb8d9; --bot-bg:#1f3140; --user-bg:#2a6f97; --mono-ink:#bfe0f1; color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.6}
+main{max-width:860px;margin:0 auto;padding:48px 22px 80px}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+h1{font-size:clamp(2rem,5.5vw,3.1rem);line-height:1.1;margin:0 0 14px;font-weight:600;letter-spacing:-.02em}
+.lede{font-size:1.15rem;color:var(--muted);max-width:62ch;margin:0 0 20px}
+.links{display:flex;flex-wrap:wrap;gap:6px 22px;margin:0 0 30px;font-weight:500}
+
+/* Chat window */
+.chat{display:flex;flex-direction:column;height:min(76vh,640px);min-height:440px;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(10,30,45,.12);margin-bottom:22px}
+.bar{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.av{flex:none;width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:.68rem;font-weight:600;letter-spacing:.02em}
+.av.lg{width:40px;height:40px;font-size:.82rem}
+:root[data-theme="dark"] .av{color:#0e161d}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .av{color:#0e161d}}
+.ttl{font-weight:600;line-height:1.25}
+.sub{font-size:.86rem;color:var(--muted);display:flex;align-items:center;gap:7px}
+.live{width:8px;height:8px;border-radius:50%;background:var(--live)}
+.msgs{flex:1;overflow-y:auto;padding:18px 16px 8px;display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:10px;align-items:flex-end;max-width:100%}
+.row.user{justify-content:flex-end}
+.bubble{max-width:min(86%,640px);padding:10px 14px;border-radius:18px;font-size:.98rem;line-height:1.55;overflow-wrap:anywhere}
+.bot .bubble{background:var(--bot-bg);border-bottom-left-radius:6px}
+.user .bubble{background:var(--user-bg);color:var(--user-ink);border-bottom-right-radius:6px}
+.bubble p{margin:0 0 8px;white-space:pre-wrap}
+.bubble p:last-child{margin-bottom:0}
+.bubble.mono,.user .bubble.mono{font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.82rem}
+.bot .bubble.mono{color:var(--mono-ink)}
+.dim{color:var(--muted)}
+.err{color:#b3261e}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .err{color:#f4a3a3}}
+:root[data-theme="dark"] .err{color:#f4a3a3}
+.tag{display:inline-block;font-size:.75rem;font-weight:600;color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:0 8px;margin-right:6px;vertical-align:1px}
+.rec{margin:0 0 10px}
+.rec:last-child{margin-bottom:0}
+.rec .h{color:var(--muted);font-size:.74rem}
+.rec .r{display:grid;grid-template-columns:minmax(7ch,12ch) 1fr;gap:0 1.2ch}
+.rec .r span:first-child{color:var(--accent);font-weight:500}
+.typing{display:flex;gap:5px;padding:14px 16px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--muted);opacity:.5}
+@media (prefers-reduced-motion: no-preference){
+  .dot{animation:bob 1s ease-in-out infinite}
+  .dot:nth-child(2){animation-delay:.15s} .dot:nth-child(3){animation-delay:.3s}
+}
+@keyframes bob{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
+
+.chips{display:flex;gap:8px;overflow-x:auto;padding:8px 16px 10px;scrollbar-width:thin}
+.chips button{flex:none;font:inherit;font-size:.84rem;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:999px;padding:6px 13px;cursor:pointer;white-space:nowrap}
+.chips button:hover{border-color:var(--accent);color:var(--accent)}
+.composer{display:flex;gap:10px;align-items:center;padding:10px 14px 14px;border-top:1px solid var(--line)}
+.composer input{flex:1;min-width:0;font:inherit;font-size:1rem;color:var(--ink);background:var(--bot-bg);border:1px solid transparent;border-radius:999px;padding:11px 18px}
+.composer input::placeholder{color:var(--muted)}
+.composer input:focus-visible{outline:none;border-color:var(--accent)}
+.composer button{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:var(--user-bg);color:#fff;display:grid;place-items:center;cursor:pointer}
+.composer button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.composer svg{width:20px;height:20px}
+
+.note{color:var(--muted);font-size:.92rem;margin:0 0 56px;max-width:66ch}
+details{border-top:1px solid var(--line);padding:16px 0}
+details:last-of-type{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;font-weight:600;font-size:1.1rem}
+.read{margin-top:14px}
+.read h3{margin:18px 0 4px;font-size:1rem}
+.read p{margin:0 0 6px;color:var(--muted);max-width:66ch}
+.read .m{font-size:.9rem}
+footer{color:var(--muted);font-size:.95rem;margin-top:36px}
+@media (max-width:520px){main{padding:32px 14px 64px}.chat{height:78vh}.bubble{max-width:90%}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Zhanthark Esthar Rani S</h1>
+  <p class="lede">Senior Business Systems Engineer for AI and automation. I build RAG systems, agents and the data layers behind them. Chat with my portfolio below, or query it in SQL.</p>
+  <p class="links">
+    <a href="mailto:esthar077@gmail.com">esthar077@gmail.com</a>
+    <a href="https://www.linkedin.com/in/zhanthark-esthar-rani-s-1b5011218/" rel="noopener">LinkedIn</a>
+    <a href="https://github.com/Esthar077" rel="noopener">GitHub</a>
+  </p>
+
+  <section class="chat" aria-label="Chat with the portfolio bot">
+    <header class="bar">
+      <div class="av lg" aria-hidden="true">ZE</div>
+      <div><div class="ttl">Portfolio bot</div><div class="sub"><span class="live" aria-hidden="true"></span>Answers from Zhanthark’s resume</div></div>
+    </header>
+    <div class="msgs" id="log" role="log" aria-live="polite" aria-label="Conversation"></div>
+    <div class="chips" id="chips"></div>
+    <form class="composer" id="form" autocomplete="off">
+      <input id="q" type="text" spellcheck="false" autocapitalize="off" placeholder="Ask a question or type SQL" aria-label="Ask a question or type a SQL query">
+      <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+    </form>
+  </section>
+  <p class="note">Answers come from a fixed set of facts about my work, matched to your question by keyword. They are not generated, so a question outside that set gets a pointer rather than a guess. Most of this work was done at my employer and its source isn’t public.</p>
+  <noscript><p>This page needs JavaScript. Email <a href="mailto:esthar077@gmail.com">esthar077@gmail.com</a> for my resume.</p></noscript>
+
+  <details><summary>Read the resume instead</summary><div class="read" id="read"></div></details>
+  <footer>Chennai, India · <a href="mailto:esthar077@gmail.com">esthar077@gmail.com</a></footer>
+</main>
+
+<script>
+// Optional: point this at your own endpoint (e.g. API Gateway + Lambda + Bedrock) that accepts
+// POST {"question": "..."} and returns {"answer": "..."}. Leave empty to use the built-in matcher.
+const API_URL = "";
+
+const DB = {
+  experience: [
+    {role:"Senior Business Systems Engineer, AI & Automation", company:"SysCloud", period:"Jun 2026 – present", location:"Chennai",
+     summary:"I design the unified data layer for revenue and customer systems and the AI workflows on top of it: RAG, agents, quote and purchase-order automation, and a Teams assistant.",
+     _t:["current","currently","now","present","role","work","job","company","syscloud","senior","ai","automation","business systems","do"]},
+    {role:"Senior Software Engineer", company:"SysCloud", period:"Jul 2025 – Jun 2026", location:"Hyderabad",
+     summary:"I managed subscription plans and price books across Salesforce and Chargebee, rebuilt audit logging, added EventBridge routing and an SES notification service, and built Azure DevOps and Grafana delivery dashboards.",
+     _t:["role","work","job","previous","before","senior","experience","hyderabad","history"]},
+    {role:"Software Engineer", company:"SysCloud", period:"Aug 2022 – Jul 2025", location:"Hyderabad",
+     summary:"I led the credential migration across 2,000+ production databases and built Cognito onboarding, resource provisioning and the Restore-Export module.",
+     _t:["role","work","job","previous","before","experience","hyderabad","history"]},
+    {role:"Engineering Intern, Data Layer", company:"SysCloud", period:"Sep 2021 – Aug 2022", location:"",
+     summary:"I supported customer migrations from Microsoft SQL Server to PostgreSQL using AWS Database Migration Service.",
+     _t:["intern","internship","started","first","beginning","dms","sql server","history","experience"]}
+  ],
+  projects: [
+    {name:"Zero-downtime credential migration", stack:"PostgreSQL, Secrets Manager, RDS, Node.js",
+     summary:"I designed and delivered the move from a shared, server-level secret to a credential for each database, migrating more than 2,000 production databases with no downtime. I built the workflows that create database-specific roles, manage credential records and validate connectivity.",
+     _t:["migration","migrate","credential","credentials","secret","secrets","zero downtime","downtime","database","databases","security","postgres","postgresql","2000","largest","proud"]},
+    {name:"Unified revenue data layer", stack:"Amazon Bedrock, PostgreSQL vector search, ETL, LangChain",
+     summary:"I brought Salesforce, HubSpot, Salesloft, Gmail, Outlook, Fireflies and Chargebee into one data layer. ETL pipelines clean the data and create embeddings stored in PostgreSQL so RAG workflows and agents can retrieve it. The workflows write meeting prep notes and minutes and flag usage gaps, revenue leakage, upsell chances, churn signals and lost-deal patterns.",
+     _t:["data layer","unified","unification","rag","retrieval","embeddings","vector","pgvector","bedrock","etl","pipeline","integration","salesforce","hubspot","churn","revenue","insights","meeting","crm","ai","orchestration","sync"]},
+    {name:"Quote automation from meeting transcripts", stack:"Salesforce, LLM extraction, Amazon Bedrock",
+     summary:"A workflow reads a meeting transcript, extracts products, customer interests, pricing and quantities, and creates a draft Salesforce quote for a salesperson to review. Accuracy is about 90%.",
+     _t:["quote","quotes","transcript","transcripts","salesforce","extraction","accuracy","llm","sales","automation","build vs buy","ai"]},
+    {name:"Purchase-order processing", stack:"Salesforce, NLP, mailbox integration",
+     summary:"A workflow handles purchase orders from the RevOps mailbox. It validates line items and prices against quotes, checks tax-exemption certificates, fills CRM fields, attaches documents and prepares the opportunity for invoicing. It saves about 15–20 minutes per PO.",
+     _t:["purchase order","purchase orders","po","invoice","invoicing","tax","revops","mailbox","automation","time saved","saves"]},
+    {name:"Internal AI assistant in Microsoft Teams", stack:"AWS Lambda, Amazon Bedrock, RAG, Adaptive Cards",
+     summary:"A Teams chatbot sends each message through AWS Lambda to a RAG flow that picks the right knowledge source and replies with a grounded answer as an Adaptive Card. It has prompt caching, feedback capture and scheduled reports.",
+     _t:["bot","chatbot","teams","assistant","microsoft","adaptive","cards","lambda","rag","prompt caching","feedback","ai"]},
+    {name:"Langflow agent workflows", stack:"Langflow, LangChain, Amazon Bedrock",
+     summary:"I deployed task-specific agent workflows for prospect research and customer discovery, plus NLP automation for customer communications and invoice validation.",
+     _t:["agent","agents","agentic","langflow","langchain","prospect","research","discovery","nlp","orchestration","ai"]},
+    {name:"Audit logging framework", stack:"Node.js, templates, placeholders",
+     summary:"I rebuilt audit logging as a language-agnostic module. Templates and placeholders produce multi-language descriptions, so log text is separate from application code.",
+     _t:["audit","log","logs","logging","multilingual","language","languages","localization","i18n","templates"]},
+    {name:"Event routing and notifications", stack:"AWS EventBridge, Amazon SES",
+     summary:"I added EventBridge routing that centralizes application events and turns them into logs for customers, and an Amazon SES service for event-driven and scheduled email notifications.",
+     _t:["eventbridge","event","events","event-driven","ses","email","notification","notifications","routing","serverless"]},
+    {name:"Tenant onboarding, provisioning and recovery", stack:"Amazon Cognito, S3, KMS, AWS Lambda",
+     summary:"I built customer onboarding on Amazon Cognito with tenant isolation through signup. I owned provisioning of dedicated databases, S3 buckets and KMS keys, created ahead of signup and allocated during onboarding, and built a configuration-driven Restore-Export module for recovery across cloud platforms.",
+     _t:["onboarding","cognito","tenant","tenants","multi-tenant","isolation","provisioning","s3","kms","backup","restore","recovery","export","signup","saas"]},
+    {name:"Delivery dashboards", stack:"Azure DevOps, Grafana",
+     summary:"I built an Azure DevOps tracking solution with Grafana dashboards that show senior management delivery progress, effort, project health and team velocity.",
+     _t:["dashboard","dashboards","grafana","azure","devops","velocity","management","reporting","project","health"]}
+  ],
+  skills: [
+    {category:"AI and LLM", items:"Amazon Bedrock, RAG, embeddings, semantic and vector search, LangChain, Langflow, agentic workflows, prompt caching, MCP", _t:["skills","skill","stack","tech","technologies","ai","llm","rag","know","mcp"]},
+    {category:"Languages and databases", items:"Node.js, TypeScript, Python, SQL, PostgreSQL, React", _t:["skills","skill","stack","tech","languages","language","programming","database","databases","postgres","python","node","typescript","react","sql","know"]},
+    {category:"AWS", items:"Lambda, Step Functions, EventBridge, RDS, Cognito, DMS, S3, KMS, Secrets Manager, SES", _t:["skills","skill","stack","tech","aws","cloud","lambda","know","serverless"]},
+    {category:"Backend and architecture", items:"REST, GraphQL, webhooks, event-driven design, multi-tenant SaaS, data migration, credential management", _t:["skills","skill","stack","tech","backend","architecture","api","apis","know"]},
+    {category:"Business systems", items:"Salesforce, HubSpot, Salesloft, Fireflies, Chargebee, Gmail and Outlook APIs", _t:["skills","skill","stack","tech","salesforce","hubspot","crm","chargebee","business systems","tools","know"]},
+    {category:"Delivery tools", items:"Git, CodeCommit, CodePipeline, Azure DevOps, Grafana, Microsoft Teams apps", _t:["skills","skill","stack","tech","tools","git","devops","know"]}
+  ],
+  education: [
+    {item:"Integrated MSc, Computer Science", detail:"Pondicherry University, 2017 – 2022", _t:["education","degree","university","college","study","studied","school","msc","masters","qualification"]},
+    {item:"AWS Certified Developer – Associate", detail:"Certification", _t:["certification","certifications","certified","aws","certificate","education"]}
+  ],
+  contact: [
+    {channel:"email", value:"esthar077@gmail.com", _t:["contact","email","mail","reach","hire","hiring","connect","touch","talk"]},
+    {channel:"linkedin", value:"https://www.linkedin.com/in/zhanthark-esthar-rani-s-1b5011218/", _t:["contact","linkedin","reach","connect","hire","profile"]},
+    {channel:"github", value:"https://github.com/Esthar077", _t:["contact","github","code","repos","repositories","open source","reach"]},
+    {channel:"location", value:"Chennai, India", _t:["location","based","city","live","chennai","relocate"]}
+  ]
+};
+
+const log = document.getElementById("log"), input = document.getElementById("q");
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const history = []; let hIdx = 0, touched = false;
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+function el(tag, cls, text){ const e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = text; return e; }
+function toEnd(){ log.scrollTop = log.scrollHeight; }
+function cols(table){ return Object.keys(DB[table][0]).filter(k => k[0] !== "_"); }
+function row(role){
+  const r = el("div", "row " + role);
+  if(role === "bot") r.appendChild(el("div", "av", "ZE"));
+  const b = el("div", "bubble"); r.appendChild(b); log.appendChild(r); toEnd(); return b;
+}
+function userMsg(t){ const b = row("user"); if(/^\s*(select\b|\\)/i.test(t)) b.classList.add("mono"); b.textContent = t; }
+async function botBubble(){
+  const b = row("bot");
+  if(!reduce){ b.classList.add("typing"); for(let i = 0; i < 3; i++) b.appendChild(el("span", "dot")); await wait(550); b.classList.remove("typing"); b.textContent = ""; }
+  return b;
+}
+function say(b, text, cls){ b.appendChild(el("p", cls || "", text)); toEnd(); }
+function linkify(v){
+  if(/^https?:\/\//.test(v)){ const a = el("a", "", v); a.href = v; a.rel = "noopener"; return a; }
+  if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ const a = el("a", "", v); a.href = "mailto:" + v; return a; }
+  return document.createTextNode(v);
+}
+function records(b, rows, colNames){
+  b.classList.add("mono");
+  rows.forEach((rw, i) => {
+    const box = el("div", "rec");
+    box.appendChild(el("div", "h", "-[ RECORD " + (i + 1) + " ]"));
+    colNames.forEach(c => { const r = el("div", "r"); r.appendChild(el("span", "", c)); const s = el("span"); s.appendChild(linkify(rw[c] || "")); r.appendChild(s); box.appendChild(r); });
+    b.appendChild(box);
+  });
+  b.appendChild(el("div", "dim", "(" + rows.length + (rows.length === 1 ? " row)" : " rows)"))); toEnd();
+}
+
+function runSQL(q, b){
+  const m = q.match(/^select\s+(.+?)\s+from\s+(\w+)(?:\s+where\s+(\w+)\s*(=|ilike|like)\s*'([^']*)')?\s*;?$/i);
+  if(!m){ b.classList.add("mono"); say(b, "ERROR:  I only understand simple queries like SELECT * FROM projects WHERE name ILIKE '%quote%';", "err"); return; }
+  const table = m[2].toLowerCase();
+  if(!DB[table]){ b.classList.add("mono"); say(b, 'ERROR:  relation "' + m[2] + '" does not exist. Type \\dt to list tables.', "err"); return; }
+  const all = cols(table);
+  const want = m[1].trim() === "*" ? all : m[1].split(",").map(s => s.trim().toLowerCase());
+  const bad = want.find(c => !all.includes(c));
+  if(bad){ b.classList.add("mono"); say(b, 'ERROR:  column "' + bad + '" does not exist. Columns: ' + all.join(", "), "err"); return; }
+  let rows = DB[table];
+  if(m[3]){
+    const col = m[3].toLowerCase();
+    if(!all.includes(col)){ b.classList.add("mono"); say(b, 'ERROR:  column "' + m[3] + '" does not exist. Columns: ' + all.join(", "), "err"); return; }
+    const op = m[4].toLowerCase(), val = m[5];
+    const re = new RegExp("^" + val.split("%").map(s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join(".*") + "$", op === "like" ? "" : "i");
+    rows = rows.filter(r => op === "=" ? String(r[col]).toLowerCase() === val.toLowerCase() : re.test(String(r[col])));
+  }
+  records(b, rows, want);
+}
+
+function command(c, b){
+  const t = c.trim().toLowerCase();
+  if(t === "\\dt"){ b.classList.add("mono"); say(b, "Tables: " + Object.keys(DB).join(", ")); return true; }
+  if(t.startsWith("\\d ")){ const n = t.slice(3).replace(/;$/, ""); b.classList.add("mono"); if(DB[n]) say(b, n + " (" + cols(n).join(", ") + ")"); else say(b, 'Did not find any relation named "' + n + '".', "err"); return true; }
+  if(t === "help" || t === "\\?" || t === "?"){ say(b, "Ask in plain English, for example: What have you built with RAG?"); say(b, "Or use SQL: SELECT * FROM projects WHERE name ILIKE '%teams%';"); say(b, "\\dt lists tables, \\d projects shows columns, clear empties the chat.", "dim"); return true; }
+  if(t === "clear" || t === "\\clear"){ log.textContent = ""; return true; }
+  if(t === "\\q" || t === "exit" || t === "quit"){ say(b, "Nothing to close here. Ask another question, or email me."); return true; }
+  return false;
+}
+
+const STOP = new Set("a an the is are was were do does did you your yours i me my we of to in on at for and or with about tell what which who how can could would should please have has had it its this that there any some more".split(" "));
+function tokens(s){ return s.toLowerCase().replace(/[^a-z0-9+#\- ]/g, " ").split(/\s+/).filter(w => w && !STOP.has(w)); }
+function esc(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+function match(question){
+  const ql = " " + question.toLowerCase().replace(/[^a-z0-9+#\- ]/g, " ") + " ", toks = tokens(question), hits = [];
+  Object.keys(DB).forEach(table => DB[table].forEach(rw => {
+    let score = 0;
+    rw._t.forEach(tag => { if(new RegExp("\\b" + esc(tag) + "s?\\b").test(ql)) score += 3; });
+    const text = Object.keys(rw).filter(k => k[0] !== "_").map(k => rw[k]).join(" ").toLowerCase();
+    toks.forEach(w => { if(w.length >= 4 && new RegExp("\\b" + esc(w.replace(/s$/, ""))).test(text)) score += 1; });
+    if(score > 0) hits.push({table, row: rw, score});
+  }));
+  hits.sort((a, b) => b.score - a.score);
+  return hits.filter(h => h.score >= Math.max(2, hits[0] ? hits[0].score * 0.6 : 0)).slice(0, 3);
+}
+function sentence(h){
+  const r = h.row;
+  if(h.table === "experience") return r.summary + " (" + r.role + ", " + r.period + (r.location ? ", " + r.location : "") + ")";
+  if(h.table === "projects") return r.name + ": " + r.summary + " Stack: " + r.stack + ". Private work, source not public.";
+  if(h.table === "skills") return r.category + ": " + r.items;
+  if(h.table === "education") return r.item + " — " + r.detail;
+  return r.channel + ": " + r.value;
+}
+async function ask(question, b){
+  if(API_URL){
+    try{
+      const res = await fetch(API_URL, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({question})});
+      const data = await res.json(); if(data.answer){ say(b, data.answer); return; }
+    }catch(e){ /* fall back to the built-in matcher */ }
+  }
+  const hits = match(question);
+  if(!hits.length){ say(b, "I don’t have that in my portfolio data. Try asking about my projects, skills, current role or education, or email esthar077@gmail.com.", "dim"); return; }
+  hits.forEach(h => { const p = el("p"); p.appendChild(el("span", "tag", h.table)); p.appendChild(document.createTextNode(sentence(h))); b.appendChild(p); });
+  say(b, "Want the raw rows? Try SELECT * FROM " + hits[0].table + ";", "dim");
+}
+
+async function submit(text){
+  const q = text.trim(); if(!q) return;
+  history.push(q); hIdx = history.length;
+  userMsg(q);
+  const b = await botBubble();
+  if(command(q, b)) return;
+  if(/^select\s/i.test(q)) runSQL(q, b); else await ask(q, b);
+  toEnd();
+}
+
+document.getElementById("form").addEventListener("submit", e => { e.preventDefault(); const v = input.value; input.value = ""; touched = true; submit(v); });
+input.addEventListener("keydown", e => {
+  touched = true;
+  if(e.key === "ArrowUp" && history.length){ hIdx = Math.max(0, hIdx - 1); input.value = history[hIdx]; e.preventDefault(); }
+  if(e.key === "ArrowDown" && history.length){ hIdx = Math.min(history.length, hIdx + 1); input.value = history[hIdx] || ""; e.preventDefault(); }
+});
+input.addEventListener("pointerdown", () => { touched = true; });
+
+["What have you built with RAG?", "Tell me about the database migration", "What is your current role?", "SELECT category, items FROM skills;", "How can I contact you?"].forEach(t => {
+  const bt = el("button", "", t); bt.type = "button"; bt.addEventListener("click", () => { touched = true; submit(t); }); document.getElementById("chips").appendChild(bt);
+});
+
+// The one unprompted moment: the first query types itself into the composer and sends.
+(async function intro(){
+  const b = row("bot");
+  say(b, "Hi, I’m the portfolio bot. I answer from Zhanthark’s resume, in his words. Ask about his work, or run a SQL query. Type help for examples.");
+  await wait(reduce ? 0 : 900);
+  if(touched) return;
+  const demo = "SELECT role, period FROM experience WHERE period LIKE '%present%';";
+  if(reduce){ input.value = demo; await wait(300); }
+  else{ for(const ch of demo){ if(touched){ input.value = ""; return; } input.value += ch; await wait(28); } await wait(350); }
+  if(touched){ input.value = ""; return; }
+  input.value = ""; submit(demo);
+})();
+
+// Static resume, built from the same data.
+(function(){
+  const box = document.getElementById("read");
+  const add = (tag, cls, text) => box.appendChild(el(tag, cls, text));
+  add("h3", "", "Experience");
+  DB.experience.forEach(r => { add("p", "m", r.period + (r.location ? " · " + r.location : "")); add("p", "", r.role + ". " + r.summary); });
+  add("h3", "", "Projects (private work, source not public)");
+  DB.projects.forEach(r => add("p", "", r.name + ": " + r.summary + " Stack: " + r.stack + "."));
+  add("h3", "", "Skills");
+  DB.skills.forEach(r => add("p", "", r.category + ": " + r.items));
+  add("h3", "", "Education and certification");
+  DB.education.forEach(r => add("p", "", r.item + " — " + r.detail));
+})();
+</script>
+</body>
+</html>
