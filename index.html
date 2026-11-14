@@ -139,6 +139,9 @@ body{font-family:"DM Sans",system-ui,sans-serif;background-color:var(--bg)}
 .theme-toggle svg{width:17px;height:17px}
 @media(max-width:600px){.site-nav{height:62px;margin-bottom:32px;gap:8px}.nav-links{gap:7px;font-size:.82rem}.nav-links .nav-menu{display:block}.nav-links .nav-resume{display:inline-flex}.brand{min-width:0}.brand-mark{width:34px;height:34px}.brand span:last-child{display:none}.nav-menu summary{padding:7px 10px;min-height:34px}.nav-resume{min-height:34px;padding:6px 9px;font-size:.76rem}.theme-toggle{width:34px;height:34px;flex-basis:34px}.theme-toggle svg{width:16px;height:16px}}
 @media(max-width:360px){.nav-links{gap:5px}.nav-menu summary{padding:6px 8px}.nav-resume{padding:6px 7px}}
+
+/* The Resume anchor is the second child after the dropdown; override legacy mobile nth-child hiding. */
+@media(max-width:600px){.site-nav .nav-links>a.nav-resume{display:inline-flex!important;visibility:visible;align-items:center;justify-content:center}}
 </style>
 </head>
 <body>
