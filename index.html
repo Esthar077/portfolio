@@ -151,6 +151,10 @@ body{font-family:"DM Sans",system-ui,sans-serif;background-color:var(--bg)}
 .nav-resume:focus-visible .resume-default{display:none}
 .nav-resume:focus-visible .resume-hover{display:inline}
 @media(max-width:600px){.nav-menu .nav-menu-label{display:none}.nav-menu summary{width:36px;min-width:36px;padding:6px;gap:0}.nav-menu summary svg{width:19px;height:19px}.site-nav .nav-resume{padding-inline:7px}}
+
+/* Borderless menu trigger, consistent with Resume link */
+.site-nav .nav-menu summary{border:0;background:transparent;box-shadow:none}
+.site-nav .nav-menu summary:hover,.site-nav .nav-menu[open] summary{border:0;background:var(--panel2)}
 </style>
 </head>
 <body>
