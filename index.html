@@ -218,6 +218,17 @@ function sentence(h){
   return r.channel + ": " + r.value;
 }
 async function ask(question, b){
+  // Keep the experience total accurate instead of relying on a stale generated answer.
+  if(/\b(total|overall|how many|number of)\b.*\b(years?|experience)\b|\b(years? of experience)\b/i.test(question)){
+    const start = new Date(2021, 8, 1);
+    const now = new Date();
+    let months = (now.getFullYear() - start.getFullYear()) * 12 + now.getMonth() - start.getMonth();
+    if(now.getDate() < start.getDate()) months--;
+    const years = Math.floor(months / 12), remaining = months % 12;
+    const duration = years + " year" + (years === 1 ? "" : "s") + (remaining ? " and " + remaining + " month" + (remaining === 1 ? "" : "s") : "");
+    say(b, "I have approximately " + duration + " of professional experience, starting with my Engineering Internship in September 2021. This includes my internship and subsequent software and business systems engineering roles.");
+    return;
+  }
   if(API_URL){
     try{
       const controller = new AbortController();
