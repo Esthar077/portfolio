@@ -4,7 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Zhanthark Esthar Rani S — Ask my portfolio</title>
-<meta name="description" content="Senior Business Systems Engineer (AI & Automation). Chat with my portfolio, or query it in SQL.">
+<meta name="description" content="Senior Business Systems Engineer building cloud-native backend systems, PostgreSQL data platforms, AWS automation and RAG-powered workflows.">
+<meta name="theme-color" content="#eef2f4">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Zhanthark Esthar Rani S — Software & AI Systems Engineer">
+<meta property="og:description" content="Selected work across AWS, PostgreSQL, backend engineering, data platforms and AI automation.">
+<meta name="twitter:card" content="summary">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -30,6 +35,8 @@ h1{font-size:clamp(2rem,5.5vw,3.1rem);line-height:1.1;margin:0 0 14px;font-weigh
 .lede{font-size:1.15rem;color:var(--muted);max-width:62ch;margin:0 0 20px}
 .links{display:flex;flex-wrap:wrap;gap:6px 22px;margin:0 0 30px;font-weight:500}
 
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 18px}.cta{display:inline-flex;align-items:center;min-height:42px;padding:8px 15px;border:1px solid var(--accent);border-radius:999px;text-decoration:none;font-weight:600}.cta.primary{background:var(--accent);color:#fff}.cta.secondary{color:var(--accent)}
+.project-section{margin:42px 0}.project-section h2{font-size:1.35rem;margin:0 0 14px}.project-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.project-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:17px}.project-card h3{font-size:1rem;margin:0 0 7px}.project-card p{font-size:.92rem;color:var(--muted);margin:0 0 10px}.project-stack{font: .76rem/1.5 "JetBrains Mono",monospace;color:var(--accent)}
 /* Chat window */
 .chat{display:flex;flex-direction:column;height:min(76vh,640px);min-height:440px;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(10,30,45,.12);margin-bottom:22px}
 .bar{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
@@ -88,23 +95,26 @@ summary{cursor:pointer;font-weight:600;font-size:1.1rem}
 .read p{margin:0 0 6px;color:var(--muted);max-width:66ch}
 .read .m{font-size:.9rem}
 footer{color:var(--muted);font-size:.95rem;margin-top:36px}
-@media (max-width:520px){main{padding:32px 14px 64px}.chat{height:78vh}.bubble{max-width:90%}}
+@media (max-width:620px){.project-grid{grid-template-columns:1fr}}
+@media (max-width:520px){main{padding:32px 14px 64px}.chat{height:min(72svh,620px);min-height:360px}.bubble{max-width:90%}}
 </style>
 </head>
 <body>
 <main>
   <h1>Zhanthark Esthar Rani S</h1>
-  <p class="lede">Senior Business Systems Engineer for AI and automation. I build RAG systems, agents and the data layers behind them. Chat with my portfolio below, or query it in SQL.</p>
+  <p class="lede">I build cloud-native backend systems, data platforms and AI-powered automation. My work spans PostgreSQL, AWS serverless architecture, database migrations, RAG workflows and enterprise integrations.</p>
+<div class="hero-actions"><a class="cta primary" href="#featured-projects">Explore projects</a><a class="cta secondary" href="#experience">View experience</a></div>
   <p class="links">
     <a href="mailto:esthar077@gmail.com">esthar077@gmail.com</a>
     <a href="https://www.linkedin.com/in/zhanthark-esthar-rani-s-1b5011218/" rel="noopener">LinkedIn</a>
     <a href="https://github.com/Esthar077" rel="noopener">GitHub</a>
   </p>
 
-  <section class="chat" aria-label="Chat with the portfolio bot">
+  <section class="project-section" id="featured-projects"><h2>Selected projects</h2><div class="project-grid"><article class="project-card"><h3>Database credential migration</h3><p>Designed a database-level credential migration across 2,000+ production databases, including role creation, secret management and connection validation.</p><div class="project-stack">PostgreSQL · AWS Secrets Manager · RDS · Lambda</div></article><article class="project-card"><h3>Unified revenue data layer</h3><p>Integrated business systems into a centralized data layer with ETL, embeddings and PostgreSQL vector search to support RAG workflows and agents.</p><div class="project-stack">Amazon Bedrock · PostgreSQL · ETL · RAG</div></article><article class="project-card"><h3>AI assistant for Microsoft Teams</h3><p>Built a Teams assistant that routes messages through AWS Lambda to a RAG flow and returns grounded responses as Adaptive Cards.</p><div class="project-stack">AWS Lambda · Amazon Bedrock · RAG</div></article><article class="project-card"><h3>Audit logging framework</h3><p>Reworked audit logs around templates and dynamic placeholders to separate descriptions from application code and support multilingual output.</p><div class="project-stack">Backend engineering · Templates · PostgreSQL</div></article></div></section>
+  <section class="chat" aria-label="Portfolio question and SQL-style explorer">
     <header class="bar">
       <div class="av lg" aria-hidden="true">ZE</div>
-      <div><div class="ttl">Portfolio bot</div><div class="sub"><span class="live" aria-hidden="true"></span>Answers from Zhanthark’s resume</div></div>
+      <div><div class="ttl">Portfolio explorer</div><div class="sub"><span class="live" aria-hidden="true"></span>Keyword-based Q&amp;A · limited SQL-style queries</div></div>
     </header>
     <div class="msgs" id="log" role="log" aria-live="polite" aria-label="Conversation"></div>
     <div class="chips" id="chips"></div>
@@ -113,10 +123,10 @@ footer{color:var(--muted);font-size:.95rem;margin-top:36px}
       <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
     </form>
   </section>
-  <p class="note">Answers come from a fixed set of facts about my work, matched to your question by keyword. They are not generated, so a question outside that set gets a pointer rather than a guess. Most of this work was done at my employer and its source isn’t public.</p>
+  <p class="note">This is a lightweight portfolio explorer, not an AI chatbot or a full SQL database. Plain-English questions are matched against curated portfolio facts; the SQL-style interface supports simple SELECT queries with an optional WHERE condition. Most project work was completed at my employer and its source code is not public.</p>
   <noscript><p>This page needs JavaScript. Email <a href="mailto:esthar077@gmail.com">esthar077@gmail.com</a> for my resume.</p></noscript>
 
-  <details><summary>Read the resume instead</summary><div class="read" id="read"></div></details>
+  <details id="experience"><summary>View experience, skills and education</summary><div class="read" id="read"></div></details>
   <footer>Chennai, India · <a href="mailto:esthar077@gmail.com">esthar077@gmail.com</a></footer>
 </main>
 
@@ -316,18 +326,8 @@ input.addEventListener("pointerdown", () => { touched = true; });
   const bt = el("button", "", t); bt.type = "button"; bt.addEventListener("click", () => { touched = true; submit(t); }); document.getElementById("chips").appendChild(bt);
 });
 
-// The one unprompted moment: the first query types itself into the composer and sends.
-(async function intro(){
-  const b = row("bot");
-  say(b, "Hi, I’m the portfolio bot. I answer from Zhanthark’s resume, in his words. Ask about his work, or run a SQL query. Type help for examples.");
-  await wait(reduce ? 0 : 900);
-  if(touched) return;
-  const demo = "SELECT role, period FROM experience WHERE period LIKE '%present%';";
-  if(reduce){ input.value = demo; await wait(300); }
-  else{ for(const ch of demo){ if(touched){ input.value = ""; return; } input.value += ch; await wait(28); } await wait(350); }
-  if(touched){ input.value = ""; return; }
-  input.value = ""; submit(demo);
-})();
+// Welcome without auto-submitting a demo query; visitors choose what to explore.
+(function intro(){ const b = row("bot"); say(b, "Hi! Ask about projects, AWS, PostgreSQL, RAG, experience or education. Type help for examples."); })();
 
 // Static resume, built from the same data.
 (function(){
