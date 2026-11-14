@@ -6,6 +6,7 @@
 <title>Zhanthark Esthar Rani S — Ask my portfolio</title>
 <meta name="description" content="Senior Business Systems Engineer building cloud-native backend systems, PostgreSQL data platforms, AWS automation and RAG-powered workflows.">
 <meta name="theme-color" content="#eef2f4">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%232a6f97%22/%3E%3Ctext x=%2250%25%22 y=%2255%25%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-size=%2225%22 font-weight=%22700%22 fill=%22white%22%3EZE%3C/text%3E%3C/svg%3E">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Zhanthark Esthar Rani S — Software & AI Systems Engineer">
 <meta property="og:description" content="Selected work across AWS, PostgreSQL, backend engineering, data platforms and AI automation.">
@@ -119,7 +120,7 @@ footer{color:var(--muted);font-size:.95rem;margin-top:36px}
     <div class="msgs" id="log" role="log" aria-live="polite" aria-label="Conversation"></div>
     <div class="chips" id="chips"></div>
     <form class="composer" id="form" autocomplete="off">
-      <input id="q" type="text" spellcheck="false" autocapitalize="off" placeholder="Ask a question or type SQL" aria-label="Ask a question or type a SQL query">
+      <input id="q" type="text" maxlength="1000" spellcheck="false" autocapitalize="off" placeholder="Ask a question or type SQL" aria-label="Ask a question or type a SQL query">
       <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
     </form>
   </section>
@@ -294,9 +295,16 @@ function sentence(h){
 async function ask(question, b){
   if(API_URL){
     try{
-      const res = await fetch(API_URL, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({question})});
-      const data = await res.json(); if(data.answer){ say(b, data.answer); return; }
-    }catch(e){ /* fall back to the built-in matcher */ }
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      let res;
+      try { res = await fetch(API_URL, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({question}), signal:controller.signal}); }
+      finally { clearTimeout(timeout); }
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      const data = await res.json();
+      if(typeof data.answer === "string" && data.answer.trim()){ say(b, data.answer); return; }
+      throw new Error("Invalid answer response");
+    }catch(e){ say(b, "The connected answer service is unavailable. I’ll use the built-in portfolio facts instead.", "dim"); }
   }
   const hits = match(question);
   if(!hits.length){ say(b, "I don’t have that in my portfolio data. Try asking about my projects, skills, current role or education, or email esthar077@gmail.com.", "dim"); return; }
@@ -306,6 +314,7 @@ async function ask(question, b){
 
 async function submit(text){
   const q = text.trim(); if(!q) return;
+  if(q.length > 1000){ const b = await botBubble(); say(b, "Please keep questions under 1,000 characters.", "err"); return; }
   history.push(q); hIdx = history.length;
   userMsg(q);
   const b = await botBubble();
