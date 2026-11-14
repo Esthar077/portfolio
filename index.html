@@ -115,7 +115,7 @@ footer{color:var(--muted);font-size:.95rem;margin-top:36px}
   <section class="chat" aria-label="Portfolio question and SQL-style explorer">
     <header class="bar">
       <div class="av lg" aria-hidden="true">ZE</div>
-      <div><div class="ttl">Portfolio explorer</div><div class="sub"><span class="live" aria-hidden="true"></span>Keyword-based Q&amp;A · limited SQL-style queries</div></div>
+      <div><div class="ttl">Portfolio explorer</div><div class="sub"><span class="live" aria-hidden="true"></span>Gemini AI when configured · keyword fallback · SQL-style queries</div></div>
     </header>
     <div class="msgs" id="log" role="log" aria-live="polite" aria-label="Conversation"></div>
     <div class="chips" id="chips"></div>
@@ -124,7 +124,7 @@ footer{color:var(--muted);font-size:.95rem;margin-top:36px}
       <button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
     </form>
   </section>
-  <p class="note">This is a lightweight portfolio explorer, not an AI chatbot or a full SQL database. Plain-English questions are matched against curated portfolio facts; the SQL-style interface supports simple SELECT queries with an optional WHERE condition. Most project work was completed at my employer and its source code is not public.</p>
+  <p class="note">Ask the portfolio explorer in natural language. It uses Gemini when the server-side API key is configured; if Gemini is unavailable or its free-tier quota is exhausted, it automatically falls back to curated keyword matching. The SQL-style interface supports simple SELECT queries, not a full SQL database. Most project work was completed at my employer and its source code is not public.</p>
   <noscript><p>This page needs JavaScript. Email <a href="mailto:esthar077@gmail.com">esthar077@gmail.com</a> for my resume.</p></noscript>
 
   <details id="experience"><summary>View experience, skills and education</summary><div class="read" id="read"></div></details>
@@ -134,7 +134,7 @@ footer{color:var(--muted);font-size:.95rem;margin-top:36px}
 <script>
 // Optional: point this at your own endpoint (e.g. API Gateway + Lambda + Bedrock) that accepts
 // POST {"question": "..."} and returns {"answer": "..."}. Leave empty to use the built-in matcher.
-const API_URL = "";
+const API_URL = "/api/chat";
 
 const DB = {
   experience: [
@@ -300,11 +300,11 @@ async function ask(question, b){
       let res;
       try { res = await fetch(API_URL, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({question}), signal:controller.signal}); }
       finally { clearTimeout(timeout); }
-      if(!res.ok) throw new Error("HTTP " + res.status);
+      if(!res.ok){ const error = new Error("HTTP " + res.status); error.status = res.status; throw error; }
       const data = await res.json();
       if(typeof data.answer === "string" && data.answer.trim()){ say(b, data.answer); return; }
       throw new Error("Invalid answer response");
-    }catch(e){ say(b, "The connected answer service is unavailable. I’ll use the built-in portfolio facts instead.", "dim"); }
+    }catch(e){ const reason = e.status === 429 ? "Gemini’s free-tier quota or rate limit has been reached. I’ll use the built-in portfolio facts instead." : "Gemini is not configured or is temporarily unavailable. I’ll use the built-in portfolio facts instead."; say(b, reason, "dim"); }
   }
   const hits = match(question);
   if(!hits.length){ say(b, "I don’t have that in my portfolio data. Try asking about my projects, skills, current role or education, or email esthar077@gmail.com.", "dim"); return; }
